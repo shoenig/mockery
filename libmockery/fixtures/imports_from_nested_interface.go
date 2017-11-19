@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/vektra/mockery/mockery/fixtures/http"
+	"github.com/shoenig/mockery/libmockery/fixtures/http"
 )
 
 type HasConflictingNestedImports interface {

@@ -1,4 +1,4 @@
-package mockery
+package libmockery
 
 import (
 	"os"

@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"os"
 	"regexp"
-	"strings"
-
-	"github.com/vektra/mockery/mockery"
 	"runtime/pprof"
+	"strings"
 	"syscall"
+
+	"github.com/shoenig/mockery/libmockery"
 )
 
 const regexMetadataChars = "\\.+*?()|[]{}^$"
@@ -45,7 +45,7 @@ func main() {
 	}
 
 	if config.fVersion {
-		fmt.Println(mockery.SemVer)
+		fmt.Println(libmockery.Version)
 		return
 	} else if config.fName != "" && config.fAll {
 		fmt.Fprintln(os.Stderr, "Specify -name or -all, but not both")
@@ -80,11 +80,11 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
-	var osp mockery.OutputStreamProvider
+	var osp libmockery.OutputStreamProvider
 	if config.fPrint {
-		osp = &mockery.StdoutStreamProvider{}
+		osp = &libmockery.StdoutStreamProvider{}
 	} else {
-		osp = &mockery.FileOutputStreamProvider{
+		osp = &libmockery.FileOutputStreamProvider{
 			BaseDir:   config.fOutput,
 			InPackage: config.fIP,
 			TestOnly:  config.fTO,
@@ -92,14 +92,14 @@ func main() {
 		}
 	}
 
-	visitor := &mockery.GeneratorVisitor{
+	visitor := &libmockery.GeneratorVisitor{
 		InPackage:   config.fIP,
 		Note:        config.fNote,
 		Osp:         osp,
 		PackageName: config.fOutpkg,
 	}
 
-	walker := mockery.Walker{
+	walker := libmockery.Walker{
 		BaseDir:   config.fDir,
 		Recursive: recursive,
 		Filter:    filter,
@@ -131,7 +131,7 @@ func parseConfigFromArgs(args []string) Config {
 	flagSet.StringVar(&config.fCase, "case", "camel", "name the mocked file using casing convention")
 	flagSet.StringVar(&config.fNote, "note", "", "comment to insert into prologue of each generated file")
 	flagSet.StringVar(&config.fProfile, "cpuprofile", "", "write cpu profile to file")
-	flagSet.BoolVar(&config.fVersion, "version", false, "prints the installed version of mockery")
+	flagSet.BoolVar(&config.fVersion, "version", false, "prints the installed version of libmockery")
 	flagSet.BoolVar(&config.quiet, "quiet", false, "suppress output to stdout")
 
 	flagSet.Parse(args[1:])

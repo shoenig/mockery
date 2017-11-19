@@ -1,11 +1,11 @@
-package mockery
+package libmockery
 
 import (
 	"testing"
 
+	"github.com/shoenig/mockery/libmockery/fixtures/mocks"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"github.com/vektra/mockery/mockery/fixtures/mocks"
 )
 
 // CompatSuite covers compatbility with github.com/stretchr/testify/mock.

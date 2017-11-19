@@ -1,4 +1,4 @@
-package mockery
+package libmockery
 
 import (
 	"go/ast"
@@ -7,9 +7,8 @@ import (
 	"go/types"
 	"io/ioutil"
 	"path/filepath"
-	"strings"
-
 	"sort"
+	"strings"
 	"sync"
 
 	"golang.org/x/tools/go/loader"
@@ -113,8 +112,8 @@ func NewNodeVisitor() *NodeVisitor {
 	}
 }
 
-func (n *NodeVisitor) DeclaredInterfaces() []string {
-	return n.declaredInterfaces
+func (nv *NodeVisitor) DeclaredInterfaces() []string {
+	return nv.declaredInterfaces
 }
 
 func (nv *NodeVisitor) Visit(node ast.Node) ast.Visitor {

@@ -1,4 +1,4 @@
-package mockery
+package libmockery
 
 import (
 	"testing"
@@ -26,20 +26,6 @@ func TestFileParse(t *testing.T) {
 	node, err := parser.Find("Requester")
 	assert.NoError(t, err)
 	assert.NotNil(t, node)
-}
-
-func noTestFileInterfaces(t *testing.T) {
-	parser := NewParser()
-
-	err := parser.Parse(testFile)
-	assert.NoError(t, err)
-
-	err = parser.Load()
-	assert.NoError(t, err)
-
-	nodes := parser.Interfaces()
-	assert.Equal(t, 1, len(nodes))
-	assert.Equal(t, "Requester", nodes[0].Name)
 }
 
 func TestBuildTagInFilename(t *testing.T) {

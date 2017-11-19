@@ -1,4 +1,4 @@
-package mockery
+package libmockery
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ type OutputStreamProvider interface {
 type StdoutStreamProvider struct {
 }
 
-func (this *StdoutStreamProvider) GetWriter(iface *Interface, pkg string) (io.Writer, error, Cleanup) {
+func (ssp *StdoutStreamProvider) GetWriter(iface *Interface, pkg string) (io.Writer, error, Cleanup) {
 	return os.Stdout, nil, func() error { return nil }
 }
 
@@ -29,18 +29,18 @@ type FileOutputStreamProvider struct {
 	Case      string
 }
 
-func (this *FileOutputStreamProvider) GetWriter(iface *Interface, pkg string) (io.Writer, error, Cleanup) {
+func (fosp *FileOutputStreamProvider) GetWriter(iface *Interface, pkg string) (io.Writer, error, Cleanup) {
 	var path string
 
 	caseName := iface.Name
-	if this.Case == "underscore" {
-		caseName = this.underscoreCaseName(caseName)
+	if fosp.Case == "underscore" {
+		caseName = fosp.underscoreCaseName(caseName)
 	}
 
-	if this.InPackage {
-		path = filepath.Join(filepath.Dir(iface.Path), this.filename(caseName))
+	if fosp.InPackage {
+		path = filepath.Join(filepath.Dir(iface.Path), fosp.filename(caseName))
 	} else {
-		path = filepath.Join(this.BaseDir, this.filename(caseName))
+		path = filepath.Join(fosp.BaseDir, fosp.filename(caseName))
 		os.MkdirAll(filepath.Dir(path), 0755)
 		pkg = filepath.Base(filepath.Dir(path))
 	}
@@ -56,19 +56,19 @@ func (this *FileOutputStreamProvider) GetWriter(iface *Interface, pkg string) (i
 	}
 }
 
-func (this *FileOutputStreamProvider) filename(name string) string {
-	if this.InPackage && this.TestOnly {
+func (fosp *FileOutputStreamProvider) filename(name string) string {
+	if fosp.InPackage && fosp.TestOnly {
 		return "mock_" + name + "_test.go"
-	} else if this.InPackage {
+	} else if fosp.InPackage {
 		return "mock_" + name + ".go"
-	} else if this.TestOnly {
+	} else if fosp.TestOnly {
 		return name + "_test.go"
 	}
 	return name + ".go"
 }
 
 // shamelessly taken from http://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-camel-caseo
-func (this *FileOutputStreamProvider) underscoreCaseName(caseName string) string {
+func (fosp *FileOutputStreamProvider) underscoreCaseName(caseName string) string {
 	rxp1 := regexp.MustCompile("(.)([A-Z][a-z]+)")
 	s1 := rxp1.ReplaceAllString(caseName, "${1}_${2}")
 	rxp2 := regexp.MustCompile("([a-z0-9])([A-Z])")

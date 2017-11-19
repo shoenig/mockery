@@ -1,4 +1,4 @@
-package mockery
+package libmockery
 
 import (
 	"os"
@@ -12,8 +12,8 @@ type GatheringVisitor struct {
 	Interfaces []*Interface
 }
 
-func (this *GatheringVisitor) VisitWalk(iface *Interface) error {
-	this.Interfaces = append(this.Interfaces, iface)
+func (gv *GatheringVisitor) VisitWalk(iface *Interface) error {
+	gv.Interfaces = append(gv.Interfaces, iface)
 	return nil
 }
 

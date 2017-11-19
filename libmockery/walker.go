@@ -1,4 +1,4 @@
-package mockery
+package libmockery
 
 import (
 	"fmt"
@@ -21,9 +21,9 @@ type WalkerVisitor interface {
 	VisitWalk(*Interface) error
 }
 
-func (this *Walker) Walk(visitor WalkerVisitor) (generated bool) {
+func (w *Walker) Walk(visitor WalkerVisitor) (generated bool) {
 	parser := NewParser()
-	this.doWalk(parser, this.BaseDir, visitor)
+	w.doWalk(parser, w.BaseDir, visitor)
 
 	err := parser.Load()
 	if err != nil {
@@ -32,7 +32,7 @@ func (this *Walker) Walk(visitor WalkerVisitor) (generated bool) {
 	}
 
 	for _, iface := range parser.Interfaces() {
-		if !this.Filter.MatchString(iface.Name) {
+		if !w.Filter.MatchString(iface.Name) {
 			continue
 		}
 		err := visitor.VisitWalk(iface)
@@ -41,7 +41,7 @@ func (this *Walker) Walk(visitor WalkerVisitor) (generated bool) {
 			os.Exit(1)
 		}
 		generated = true
-		if this.LimitOne {
+		if w.LimitOne {
 			return
 		}
 	}
@@ -49,7 +49,7 @@ func (this *Walker) Walk(visitor WalkerVisitor) (generated bool) {
 	return
 }
 
-func (this *Walker) doWalk(p *Parser, dir string, visitor WalkerVisitor) (generated bool) {
+func (w *Walker) doWalk(p *Parser, dir string, visitor WalkerVisitor) (generated bool) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return
@@ -63,9 +63,9 @@ func (this *Walker) doWalk(p *Parser, dir string, visitor WalkerVisitor) (genera
 		path := filepath.Join(dir, file.Name())
 
 		if file.IsDir() {
-			if this.Recursive {
-				generated = this.doWalk(p, path, visitor) || generated
-				if generated && this.LimitOne {
+			if w.Recursive {
+				generated = w.doWalk(p, path, visitor) || generated
+				if generated && w.LimitOne {
 					return
 				}
 			}
@@ -94,7 +94,7 @@ type GeneratorVisitor struct {
 	PackageName string
 }
 
-func (this *GeneratorVisitor) VisitWalk(iface *Interface) error {
+func (gv *GeneratorVisitor) VisitWalk(iface *Interface) error {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("Unable to generated mock for '%s': %s\n", iface.Name, r)
@@ -105,21 +105,21 @@ func (this *GeneratorVisitor) VisitWalk(iface *Interface) error {
 	var out io.Writer
 	var pkg string
 
-	if this.InPackage {
+	if gv.InPackage {
 		pkg = iface.Path
 	} else {
-		pkg = this.PackageName
+		pkg = gv.PackageName
 	}
 
-	out, err, closer := this.Osp.GetWriter(iface, pkg)
+	out, err, closer := gv.Osp.GetWriter(iface, pkg)
 	if err != nil {
 		fmt.Printf("Unable to get writer for %s: %s", iface.Name, err)
 		os.Exit(1)
 	}
 	defer closer()
 
-	gen := NewGenerator(iface, pkg, this.InPackage)
-	gen.GeneratePrologueNote(this.Note)
+	gen := NewGenerator(iface, pkg, gv.InPackage)
+	gen.GeneratePrologueNote(gv.Note)
 	gen.GeneratePrologue(pkg)
 
 	err = gen.Generate()
