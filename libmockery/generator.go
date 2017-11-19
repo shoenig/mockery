@@ -18,10 +18,12 @@ import (
 	"golang.org/x/tools/imports"
 )
 
+var Gopath = os.Getenv("GOPATH")
+
 var invalidIdentifierChar = regexp.MustCompile("[^[:digit:][:alpha:]_]")
 
 func getGoPathSrc() string {
-	return filepath.Join(filepath.SplitList(os.Getenv("GOPATH"))[0], "src")
+	return filepath.Join(filepath.SplitList(Gopath)[0], "src")
 }
 
 // Generator is responsible for generating the string containing
@@ -47,7 +49,7 @@ func NewGenerator(iface *Interface, pkg string, inPackage bool) *Generator {
 
 	var roots []string
 
-	for _, root := range filepath.SplitList(os.Getenv("GOPATH")) {
+	for _, root := range filepath.SplitList(Gopath) {
 		roots = append(roots, filepath.Join(root, "src"))
 	}
 

@@ -47,24 +47,26 @@ func (fosp *FileOutputStreamProvider) GetWriter(iface *Interface, pkg string) (i
 
 	f, err := os.Create(path)
 	if err != nil {
-		return nil, err, func() error { return nil }
+		return nil, err, nil
 	}
 
-	fmt.Printf("Generating mock for: %s\n", iface.Name)
+	fmt.Printf("generating mock for interface: %q\n", iface.Name)
 	return f, nil, func() error {
 		return f.Close()
 	}
 }
 
 func (fosp *FileOutputStreamProvider) filename(name string) string {
-	if fosp.InPackage && fosp.TestOnly {
+	switch {
+	case fosp.InPackage && fosp.TestOnly:
 		return "mock_" + name + "_test.go"
-	} else if fosp.InPackage {
+	case fosp.InPackage:
 		return "mock_" + name + ".go"
-	} else if fosp.TestOnly {
+	case fosp.TestOnly:
 		return name + "_test.go"
+	default:
+		return name + ".go"
 	}
-	return name + ".go"
 }
 
 // shamelessly taken from http://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-camel-caseo

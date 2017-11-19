@@ -28,21 +28,22 @@ func TestFileParse(t *testing.T) {
 	assert.NotNil(t, node)
 }
 
+func testParse(t *testing.T, parser *Parser, a, b, c string) {
+	err := parser.Parse(getFixturePath(a, b, c))
+	assert.NoError(t, err)
+}
+
 func TestBuildTagInFilename(t *testing.T) {
 	parser := NewParser()
 
 	// Include the major OS values found on https://golang.org/dl/ so we're likely to match
 	// anywhere the test is executed.
-	err := parser.Parse(getFixturePath("buildtag", "filename", "iface_windows.go"))
-	assert.NoError(t, err)
-	err = parser.Parse(getFixturePath("buildtag", "filename", "iface_linux.go"))
-	assert.NoError(t, err)
-	err = parser.Parse(getFixturePath("buildtag", "filename", "iface_darwin.go"))
-	assert.NoError(t, err)
-	err = parser.Parse(getFixturePath("buildtag", "filename", "iface_freebsd.go"))
-	assert.NoError(t, err)
+	testParse(t, parser, "buildtag", "filename", "iface_windows.go")
+	testParse(t, parser, "buildtag", "filename", "iface_linux.go")
+	testParse(t, parser, "buildtag", "filename", "iface_darwin.go")
+	testParse(t, parser, "buildtag", "filename", "iface_freebsd.go")
 
-	err = parser.Load()
+	err := parser.Load()
 	assert.NoError(t, err) // Expect "redeclared in this block" if tags aren't respected
 
 	nodes := parser.Interfaces()
@@ -55,16 +56,12 @@ func TestBuildTagInComment(t *testing.T) {
 
 	// Include the major OS values found on https://golang.org/dl/ so we're likely to match
 	// anywhere the test is executed.
-	err := parser.Parse(getFixturePath("buildtag", "comment", "windows_iface.go"))
-	assert.NoError(t, err)
-	err = parser.Parse(getFixturePath("buildtag", "comment", "linux_iface.go"))
-	assert.NoError(t, err)
-	err = parser.Parse(getFixturePath("buildtag", "comment", "darwin_iface.go"))
-	assert.NoError(t, err)
-	err = parser.Parse(getFixturePath("buildtag", "comment", "freebsd_iface.go"))
-	assert.NoError(t, err)
+	testParse(t, parser, "buildtag", "comment", "windows_iface.go")
+	testParse(t, parser, "buildtag", "comment", "linux_iface.go")
+	testParse(t, parser, "buildtag", "comment", "darwin_iface.go")
+	testParse(t, parser, "buildtag", "comment", "freebsd_iface.go")
 
-	err = parser.Load()
+	err := parser.Load()
 	assert.NoError(t, err) // Expect "redeclared in this block" if tags aren't respected
 
 	nodes := parser.Interfaces()
