@@ -2,10 +2,10 @@ package libmockery
 
 import (
 	"os"
-	"regexp"
+	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type GatheringVisitor struct {
@@ -23,50 +23,41 @@ func NewGatheringVisitor() *GatheringVisitor {
 	}
 }
 
-func TestWalkerHere(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping recursive walker test")
-	}
-
-	wd, err := os.Getwd()
-	assert.NoError(t, err)
+func TestWalker_gather_cwd(t *testing.T) {
 	w := Walker{
-		BaseDir:   wd,
-		Recursive: true,
-		LimitOne:  false,
-		Filter:    regexp.MustCompile(".*"),
+		BaseDir:   ".",
+		Interface: "WalkerVisitor",
 	}
 
 	gv := NewGatheringVisitor()
 
 	w.Walk(gv)
 
-	assert.True(t, len(gv.Interfaces) > 10)
+	require.Equal(t, 1, len(gv.Interfaces))
 	first := gv.Interfaces[0]
-	assert.Equal(t, "AsyncProducer", first.Name)
-	assert.Equal(t, getFixturePath("async.go"), first.Path)
+	require.Equal(t, "WalkerVisitor", first.Name)
+
+	cwd, err := os.Getwd()
+	require.NoError(t, err)
+
+	path := filepath.Join(cwd, "walker.go")
+	require.NoError(t, err)
+
+	require.Equal(t, path, first.Path)
 }
 
-func TestWalkerRegexp(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping recursive walker test")
-	}
-
-	wd, err := os.Getwd()
-	assert.NoError(t, err)
+func TestWalker_gather_subdir(t *testing.T) {
 	w := Walker{
-		BaseDir:   wd,
-		Recursive: true,
-		LimitOne:  false,
-		Filter:    regexp.MustCompile(".*AsyncProducer*."),
+		BaseDir:   "fixtures",
+		Interface: "AsyncProducer",
 	}
 
 	gv := NewGatheringVisitor()
 
 	w.Walk(gv)
 
-	assert.True(t, len(gv.Interfaces) >= 1)
+	require.Equal(t, 1, len(gv.Interfaces))
 	first := gv.Interfaces[0]
-	assert.Equal(t, "AsyncProducer", first.Name)
-	assert.Equal(t, getFixturePath("async.go"), first.Path)
+	require.Equal(t, "AsyncProducer", first.Name)
+	require.Equal(t, getFixturePath("async.go"), first.Path)
 }

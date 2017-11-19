@@ -1,13 +1,38 @@
 mockery
 =======
 
-mockery provides the ability to easily generate mocks for golang interfaces. It removes
-the boilerplate coding required to use mocks.
+mockery (v2) is used to generate mock implementations of Go interfaces.
 
 
-### Installation
+## Installation
 
-`go get github.com/vektra/mockery/.../`, then `$GOPATH/bin/mockery`
+`go install github.com/shoenig/mockery`
+
+## Arguments
+
+##### version
+
+Use `-version=true` to print the mockery version string and exit.
+
+##### interface
+
+Use `-interface=Interface` to specify which interface a mock should be generated for.
+
+##### package
+
+Use `-package=name` to specify the name of the output package name containing the generated mocks.
+
+##### stdout
+
+Use `-stdout=true` to have mockery print generated mocks to standard out instead of writing to disk.
+
+##### comment
+
+Use `-comment="some text"` to have mockery inject a comment into the prologue of each generated file.
+
+
+
+----------------------- cut here --------------------
 
 ### Examples
 

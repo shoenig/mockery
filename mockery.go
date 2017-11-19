@@ -4,135 +4,73 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"regexp"
-	"runtime/pprof"
-	"strings"
-	"syscall"
 
 	"github.com/shoenig/mockery/libmockery"
 )
 
-const regexMetadataChars = "\\.+*?()|[]{}^$"
-
-type Config struct {
-	fName      string
-	fPrint     bool
-	fOutput    string
-	fOutpkg    string
-	fDir       string
-	fRecursive bool
-	fAll       bool
-	fIP        bool
-	fTO        bool
-	fCase      string
-	fNote      string
-	fProfile   string
-	fVersion   bool
-	quiet      bool
+type flags struct {
+	version bool
+	iface   string
+	stdout  bool
+	comment string
+	pkgname string
 }
 
 func main() {
-	config := parseConfigFromArgs(os.Args)
+	config := parseFlags(os.Args)
 
-	var recursive bool
-	var filter *regexp.Regexp
-	var err error
-	var limitOne bool
-
-	if config.quiet {
-		// if "quiet" flag is set, set os.Stdout to /dev/null to suppress all output to Stdout
-		os.Stdout = os.NewFile(uintptr(syscall.Stdout), os.DevNull)
-	}
-
-	if config.fVersion {
-		fmt.Println(libmockery.Version)
+	if config.version {
+		fmt.Println("mockery " + libmockery.Version)
 		return
-	} else if config.fName != "" && config.fAll {
-		fmt.Fprintln(os.Stderr, "Specify -name or -all, but not both")
-		os.Exit(1)
-	} else if config.fName != "" {
-		recursive = config.fRecursive
-		if strings.ContainsAny(config.fName, regexMetadataChars) {
-			if filter, err = regexp.Compile(config.fName); err != nil {
-				fmt.Fprintln(os.Stderr, "Invalid regular expression provided to -name")
-				os.Exit(1)
-			}
-		} else {
-			filter = regexp.MustCompile(fmt.Sprintf("^%s$", config.fName))
-			limitOne = true
-		}
-	} else if config.fAll {
-		recursive = true
-		filter = regexp.MustCompile(".*")
-	} else {
-		fmt.Fprintln(os.Stderr, "Use -name to specify the name of the interface or -all for all interfaces found")
+	}
+
+	if config.iface == "" {
+		fmt.Println("-interface is required")
 		os.Exit(1)
 	}
 
-	if config.fProfile != "" {
-		f, err := os.Create(config.fProfile)
-		if err != nil {
-			os.Exit(1)
-			return
-		}
-
-		pprof.StartCPUProfile(f)
-		defer pprof.StopCPUProfile()
-	}
-
-	var osp libmockery.OutputStreamProvider
-	if config.fPrint {
-		osp = &libmockery.StdoutStreamProvider{}
-	} else {
-		osp = &libmockery.FileOutputStreamProvider{
-			BaseDir:   config.fOutput,
-			InPackage: config.fIP,
-			TestOnly:  config.fTO,
-			Case:      config.fCase,
-		}
+	if config.pkgname == "" {
+		fmt.Println("-package is required")
+		os.Exit(1)
 	}
 
 	visitor := &libmockery.GeneratorVisitor{
-		InPackage:   config.fIP,
-		Note:        config.fNote,
-		Osp:         osp,
-		PackageName: config.fOutpkg,
+		Comment:           config.comment,
+		OutputProvider:    outputProvider(config),
+		OutputPackageName: config.pkgname,
 	}
 
 	walker := libmockery.Walker{
-		BaseDir:   config.fDir,
-		Recursive: recursive,
-		Filter:    filter,
-		LimitOne:  limitOne,
+		BaseDir:   ".",
+		Interface: config.iface,
 	}
 
 	generated := walker.Walk(visitor)
 
-	if config.fName != "" && !generated {
-		fmt.Printf("Unable to find %s in any go files under this path\n", config.fName)
+	if !generated {
+		fmt.Printf("Unable to find interface %q in any go files under this path\n", config.iface)
 		os.Exit(1)
 	}
 }
 
-func parseConfigFromArgs(args []string) Config {
-	config := Config{}
+func outputProvider(config flags) libmockery.OutputStreamProvider {
+	if config.stdout {
+		return &libmockery.StdoutStreamProvider{}
+	}
+	return &libmockery.FileOutputStreamProvider{
+		BaseDir: config.pkgname,
+	}
+}
+
+func parseFlags(args []string) flags {
+	config := flags{}
 
 	flagSet := flag.NewFlagSet(args[0], flag.ExitOnError)
-
-	flagSet.StringVar(&config.fName, "name", "", "name or matching regular expression of interface to generate mock for")
-	flagSet.BoolVar(&config.fPrint, "print", false, "print the generated mock to stdout")
-	flagSet.StringVar(&config.fOutput, "output", "./mocks", "directory to write mocks to")
-	flagSet.StringVar(&config.fOutpkg, "outpkg", "mocks", "name of generated package")
-	flagSet.StringVar(&config.fDir, "dir", ".", "directory to search for interfaces")
-	flagSet.BoolVar(&config.fRecursive, "recursive", false, "recurse search into sub-directories")
-	flagSet.BoolVar(&config.fAll, "all", false, "generates mocks for all found interfaces in all sub-directories")
-	flagSet.BoolVar(&config.fIP, "inpkg", false, "generate a mock that goes inside the original package")
-	flagSet.BoolVar(&config.fTO, "testonly", false, "generate a mock in a _test.go file")
-	flagSet.StringVar(&config.fCase, "case", "camel", "name the mocked file using casing convention")
-	flagSet.StringVar(&config.fNote, "note", "", "comment to insert into prologue of each generated file")
-	flagSet.StringVar(&config.fProfile, "cpuprofile", "", "write cpu profile to file")
-	flagSet.BoolVar(&config.fVersion, "version", false, "prints the installed version of libmockery")
-	flagSet.BoolVar(&config.quiet, "quiet", false, "suppress output to stdout")
+	flagSet.BoolVar(&config.version, "version", false, "print the version of this mockery executable")
+	flagSet.StringVar(&config.iface, "interface", "", "name or matching regular expression of interface to generate mock for")
+	flagSet.BoolVar(&config.stdout, "stdout", false, "print the generated mock to stdout instead of writing to disk")
+	flagSet.StringVar(&config.comment, "comment", "", "comment to insert into prologue of each generated file")
+	flagSet.StringVar(&config.pkgname, "package", "", "package name containing generated mocks")
 
 	flagSet.Parse(args[1:])
 

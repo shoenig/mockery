@@ -12,86 +12,83 @@ import (
 
 type Walker struct {
 	BaseDir   string
-	Recursive bool
-	Filter    *regexp.Regexp
-	LimitOne  bool
+	Interface string
 }
 
 type WalkerVisitor interface {
 	VisitWalk(*Interface) error
 }
 
-func (w *Walker) Walk(visitor WalkerVisitor) (generated bool) {
+// Walk returns true if a mock is generated.
+func (w *Walker) Walk(visitor WalkerVisitor) bool {
 	parser := NewParser()
-	w.doWalk(parser, w.BaseDir, visitor)
 
-	err := parser.Load()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error walking: %v\n", err)
+	if err := w.doWalk(parser, w.BaseDir, visitor); err != nil {
+		fmt.Printf("failed to walk directory %q: %v\n", w.BaseDir, err)
 		os.Exit(1)
 	}
 
-	for _, iface := range parser.Interfaces() {
-		if !w.Filter.MatchString(iface.Name) {
-			continue
-		}
-		err := visitor.VisitWalk(iface)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error walking %s: %s\n", iface.Name, err)
-			os.Exit(1)
-		}
-		generated = true
-		if w.LimitOne {
-			return
-		}
+	if err := parser.Load(); err != nil {
+		fmt.Printf("parser had error while walking: %v\n", err)
+		os.Exit(1)
 	}
 
-	return
+	filter := regexp.MustCompile(
+		fmt.Sprintf(`^%s$`, w.Interface),
+	)
+
+	for _, iface := range parser.Interfaces() {
+		if !filter.MatchString(iface.Name) {
+			continue
+		}
+
+		if err := visitor.VisitWalk(iface); err != nil {
+			fmt.Printf("visitor had error in walk for interface %q: %s\n", iface.Name, err)
+			os.Exit(1)
+		}
+
+		return true
+	}
+
+	return false
 }
 
-func (w *Walker) doWalk(p *Parser, dir string, visitor WalkerVisitor) (generated bool) {
+// doWalk is a helper function that returns true as soon as the first mock is generated.
+func (w *Walker) doWalk(p *Parser, dir string, visitor WalkerVisitor) error {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
-		return
+		return err
 	}
 
 	for _, file := range files {
-		if strings.HasPrefix(file.Name(), ".") || strings.HasPrefix(file.Name(), "_") {
+		filename := file.Name()
+		if strings.HasPrefix(filename, ".") || strings.HasPrefix(filename, "_") {
 			continue
 		}
-
-		path := filepath.Join(dir, file.Name())
 
 		if file.IsDir() {
-			if w.Recursive {
-				generated = w.doWalk(p, path, visitor) || generated
-				if generated && w.LimitOne {
-					return
-				}
-			}
 			continue
 		}
+
+		path := filepath.Join(dir, filename)
 
 		if !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "_test.go") {
 			continue
 		}
 
-		err = p.Parse(path)
-		if err != nil {
+		if err := p.Parse(path); err != nil {
 			fmt.Fprintln(os.Stderr, "Error parsing file: ", err)
-			return
+			return err
 		}
 	}
 
-	return
+	return nil
 }
 
 type GeneratorVisitor struct {
-	InPackage bool
-	Note      string
-	Osp       OutputStreamProvider
-	// The name of the output package, if InPackage is false (defaults to "mocks")
-	PackageName string
+	Comment           string
+	OutputPackageName string
+	OutputProvider    OutputStreamProvider
 }
 
 func (gv *GeneratorVisitor) VisitWalk(iface *Interface) error {
@@ -103,32 +100,23 @@ func (gv *GeneratorVisitor) VisitWalk(iface *Interface) error {
 	}()
 
 	var out io.Writer
-	var pkg string
 
-	if gv.InPackage {
-		pkg = iface.Path
-	} else {
-		pkg = gv.PackageName
-	}
-
-	out, err, closer := gv.Osp.GetWriter(iface, pkg)
+	out, err, closer := gv.OutputProvider.GetWriter(iface)
 	if err != nil {
 		fmt.Printf("Unable to get writer for %s: %s", iface.Name, err)
 		os.Exit(1)
 	}
 	defer closer()
 
-	gen := NewGenerator(iface, pkg, gv.InPackage)
-	gen.GeneratePrologueNote(gv.Note)
-	gen.GeneratePrologue(pkg)
+	gen := NewGenerator(iface, gv.OutputPackageName)
+	gen.GeneratePrologueComment(gv.Comment)
+	gen.GeneratePrologue(gv.OutputPackageName)
 
-	err = gen.Generate()
-	if err != nil {
+	if err = gen.Generate(); err != nil {
 		return err
 	}
 
-	err = gen.Write(out)
-	if err != nil {
+	if err = gen.Write(out); err != nil {
 		return err
 	}
 	return nil
