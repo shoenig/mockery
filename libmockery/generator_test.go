@@ -104,8 +104,8 @@ type Requester struct {
 }
 
 // Get provides a mock function with given fields: path
-func (_m *Requester) Get(path string) (string, error) {
-	ret := _m.Called(path)
+func (mockerySelf *Requester) Get(path string) (string, error) {
+	ret := mockerySelf.Called(path)
 
 	var r0 string
 	if rf, ok := ret.Get(0).(func(string) string); ok {
@@ -134,8 +134,8 @@ type Requester2 struct {
 }
 
 // Get provides a mock function with given fields: path
-func (_m *Requester2) Get(path string) error {
-	ret := _m.Called(path)
+func (mockerySelf *Requester2) Get(path string) error {
+	ret := mockerySelf.Called(path)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string) error); ok {
@@ -157,8 +157,8 @@ type Requester3 struct {
 }
 
 // Get provides a mock function with given fields:
-func (_m *Requester3) Get() error {
-	ret := _m.Called()
+func (mockerySelf *Requester3) Get() error {
+	ret := mockerySelf.Called()
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -183,8 +183,8 @@ type Requester4 struct {
 }
 
 // Get provides a mock function with given fields:
-func (_m *Requester4) Get() {
-	_m.Called()
+func (mockerySelf *Requester4) Get() {
+	mockerySelf.Called()
 }
 `
 	s.checkGeneration(
@@ -269,8 +269,8 @@ type RequesterIface struct {
 }
 
 // Get provides a mock function with given fields:
-func (_m *RequesterIface) Get() io.Reader {
-	ret := _m.Called()
+func (mockerySelf *RequesterIface) Get() io.Reader {
+	ret := mockerySelf.Called()
 
 	var r0 io.Reader
 	if rf, ok := ret.Get(0).(func() io.Reader); ok {
@@ -296,8 +296,8 @@ type RequesterPtr struct {
 }
 
 // Get provides a mock function with given fields: path
-func (_m *RequesterPtr) Get(path string) (*string, error) {
-	ret := _m.Called(path)
+func (mockerySelf *RequesterPtr) Get(path string) (*string, error) {
+	ret := mockerySelf.Called(path)
 
 	var r0 *string
 	if rf, ok := ret.Get(0).(func(string) *string); ok {
@@ -330,8 +330,8 @@ type RequesterSlice struct {
 }
 
 // Get provides a mock function with given fields: path
-func (_m *RequesterSlice) Get(path string) ([]string, error) {
-	ret := _m.Called(path)
+func (mockerySelf *RequesterSlice) Get(path string) ([]string, error) {
+	ret := mockerySelf.Called(path)
 
 	var r0 []string
 	if rf, ok := ret.Get(0).(func(string) []string); ok {
@@ -364,8 +364,8 @@ type RequesterArray struct {
 }
 
 // Get provides a mock function with given fields: path
-func (_m *RequesterArray) Get(path string) ([2]string, error) {
-	ret := _m.Called(path)
+func (mockerySelf *RequesterArray) Get(path string) ([2]string, error) {
+	ret := mockerySelf.Called(path)
 
 	var r0 [2]string
 	if rf, ok := ret.Get(0).(func(string) [2]string); ok {
@@ -398,8 +398,8 @@ type RequesterNS struct {
 }
 
 // Get provides a mock function with given fields: path
-func (_m *RequesterNS) Get(path string) (http.Response, error) {
-	ret := _m.Called(path)
+func (mockerySelf *RequesterNS) Get(path string) (http.Response, error) {
+	ret := mockerySelf.Called(path)
 
 	var r0 http.Response
 	if rf, ok := ret.Get(0).(func(string) http.Response); ok {
@@ -429,13 +429,13 @@ type RequesterArgSameAsImport struct {
 	mock.Mock
 }
 
-// Get provides a mock function with given fields: _a0
-func (_m *RequesterArgSameAsImport) Get(_a0 string) *json.RawMessage {
-	ret := _m.Called(_a0)
+// Get provides a mock function with given fields: mockeryArg0
+func (mockerySelf *RequesterArgSameAsImport) Get(mockeryArg0 string) *json.RawMessage {
+	ret := mockerySelf.Called(mockeryArg0)
 
 	var r0 *json.RawMessage
 	if rf, ok := ret.Get(0).(func(string) *json.RawMessage); ok {
-		r0 = rf(_a0)
+		r0 = rf(mockeryArg0)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*json.RawMessage)
@@ -457,13 +457,13 @@ type RequesterArgSameAsNamedImport struct {
 	mock.Mock
 }
 
-// Get provides a mock function with given fields: _a0
-func (_m *RequesterArgSameAsNamedImport) Get(_a0 string) *json.RawMessage {
-	ret := _m.Called(_a0)
+// Get provides a mock function with given fields: mockeryArg0
+func (mockerySelf *RequesterArgSameAsNamedImport) Get(mockeryArg0 string) *json.RawMessage {
+	ret := mockerySelf.Called(mockeryArg0)
 
 	var r0 *json.RawMessage
 	if rf, ok := ret.Get(0).(func(string) *json.RawMessage); ok {
-		r0 = rf(_a0)
+		r0 = rf(mockeryArg0)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*json.RawMessage)
@@ -485,9 +485,9 @@ type RequesterArgSameAsPkg struct {
 	mock.Mock
 }
 
-// Get provides a mock function with given fields: _a0
-func (_m *RequesterArgSameAsPkg) Get(_a0 string) {
-	_m.Called(_a0)
+// Get provides a mock function with given fields: mockeryArg0
+func (mockerySelf *RequesterArgSameAsPkg) Get(mockeryArg0 string) {
+	mockerySelf.Called(mockeryArg0)
 }
 `
 	s.checkGeneration(
@@ -502,13 +502,13 @@ type KeyManager struct {
 	mock.Mock
 }
 
-// GetKey provides a mock function with given fields: _a0, _a1
-func (_m *KeyManager) GetKey(_a0 string, _a1 uint16) ([]byte, *test.Err) {
-	ret := _m.Called(_a0, _a1)
+// GetKey provides a mock function with given fields: mockeryArg0, mockeryArg1
+func (mockerySelf *KeyManager) GetKey(mockeryArg0 string, mockeryArg1 uint16) ([]byte, *test.Err) {
+	ret := mockerySelf.Called(mockeryArg0, mockeryArg1)
 
 	var r0 []byte
 	if rf, ok := ret.Get(0).(func(string, uint16) []byte); ok {
-		r0 = rf(_a0, _a1)
+		r0 = rf(mockeryArg0, mockeryArg1)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]byte)
@@ -517,7 +517,7 @@ func (_m *KeyManager) GetKey(_a0 string, _a1 uint16) ([]byte, *test.Err) {
 
 	var r1 *test.Err
 	if rf, ok := ret.Get(1).(func(string, uint16) *test.Err); ok {
-		r1 = rf(_a0, _a1)
+		r1 = rf(mockeryArg0, mockeryArg1)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(*test.Err)
@@ -539,8 +539,8 @@ type RequesterElided struct {
 }
 
 // Get provides a mock function with given fields: path, url
-func (_m *RequesterElided) Get(path string, url string) error {
-	ret := _m.Called(path, url)
+func (mockerySelf *RequesterElided) Get(path string, url string) error {
+	ret := mockerySelf.Called(path, url)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string, string) error); ok {
@@ -564,8 +564,8 @@ type RequesterReturnElided struct {
 }
 
 // Get provides a mock function with given fields: path
-func (_m *RequesterReturnElided) Get(path string) (int, int, int, error) {
-	ret := _m.Called(path)
+func (mockerySelf *RequesterReturnElided) Get(path string) (int, int, int, error) {
+	ret := mockerySelf.Called(path)
 
 	var r0 int
 	if rf, ok := ret.Get(0).(func(string) int); ok {
@@ -626,13 +626,13 @@ type Fooer struct {
 }
 
 // Bar provides a mock function with given fields: f
-func (_m *Fooer) Bar(f func([]int)) {
-	_m.Called(f)
+func (mockerySelf *Fooer) Bar(f func([]int)) {
+	mockerySelf.Called(f)
 }
 
 // Baz provides a mock function with given fields: path
-func (_m *Fooer) Baz(path string) func(string) string {
-	ret := _m.Called(path)
+func (mockerySelf *Fooer) Baz(path string) func(string) string {
+	ret := mockerySelf.Called(path)
 
 	var r0 func(string) string
 	if rf, ok := ret.Get(0).(func(string) func(string) string); ok {
@@ -647,8 +647,8 @@ func (_m *Fooer) Baz(path string) func(string) string {
 }
 
 // Foo provides a mock function with given fields: f
-func (_m *Fooer) Foo(f func(string) string) error {
-	ret := _m.Called(f)
+func (mockerySelf *Fooer) Foo(f func(string) string) error {
+	ret := mockerySelf.Called(f)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(func(string) string) error); ok {
@@ -672,8 +672,8 @@ type AsyncProducer struct {
 }
 
 // Input provides a mock function with given fields:
-func (_m *AsyncProducer) Input() chan<- bool {
-	ret := _m.Called()
+func (mockerySelf *AsyncProducer) Input() chan<- bool {
+	ret := mockerySelf.Called()
 
 	var r0 chan<- bool
 	if rf, ok := ret.Get(0).(func() chan<- bool); ok {
@@ -688,8 +688,8 @@ func (_m *AsyncProducer) Input() chan<- bool {
 }
 
 // Output provides a mock function with given fields:
-func (_m *AsyncProducer) Output() <-chan bool {
-	ret := _m.Called()
+func (mockerySelf *AsyncProducer) Output() <-chan bool {
+	ret := mockerySelf.Called()
 
 	var r0 <-chan bool
 	if rf, ok := ret.Get(0).(func() <-chan bool); ok {
@@ -704,8 +704,8 @@ func (_m *AsyncProducer) Output() <-chan bool {
 }
 
 // Whatever provides a mock function with given fields:
-func (_m *AsyncProducer) Whatever() chan bool {
-	ret := _m.Called()
+func (mockerySelf *AsyncProducer) Whatever() chan bool {
+	ret := mockerySelf.Called()
 
 	var r0 chan bool
 	if rf, ok := ret.Get(0).(func() chan bool); ok {
@@ -731,8 +731,8 @@ type MyReader struct {
 }
 
 // Read provides a mock function with given fields: p
-func (_m *MyReader) Read(p []byte) (int, error) {
-	ret := _m.Called(p)
+func (mockerySelf *MyReader) Read(p []byte) (int, error) {
+	ret := mockerySelf.Called(p)
 
 	var r0 int
 	if rf, ok := ret.Get(0).(func([]byte) int); ok {
@@ -762,13 +762,13 @@ type ConsulLock struct {
 	mock.Mock
 }
 
-// Lock provides a mock function with given fields: _a0
-func (_m *ConsulLock) Lock(_a0 <-chan struct{}) (<-chan struct{}, error) {
-	ret := _m.Called(_a0)
+// Lock provides a mock function with given fields: mockeryArg0
+func (mockerySelf *ConsulLock) Lock(mockeryArg0 <-chan struct{}) (<-chan struct{}, error) {
+	ret := mockerySelf.Called(mockeryArg0)
 
 	var r0 <-chan struct{}
 	if rf, ok := ret.Get(0).(func(<-chan struct{}) <-chan struct{}); ok {
-		r0 = rf(_a0)
+		r0 = rf(mockeryArg0)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(<-chan struct{})
@@ -777,7 +777,7 @@ func (_m *ConsulLock) Lock(_a0 <-chan struct{}) (<-chan struct{}, error) {
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(<-chan struct{}) error); ok {
-		r1 = rf(_a0)
+		r1 = rf(mockeryArg0)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -786,8 +786,8 @@ func (_m *ConsulLock) Lock(_a0 <-chan struct{}) (<-chan struct{}, error) {
 }
 
 // Unlock provides a mock function with given fields:
-func (_m *ConsulLock) Unlock() error {
-	ret := _m.Called()
+func (mockerySelf *ConsulLock) Unlock() error {
+	ret := mockerySelf.Called()
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func() error); ok {
@@ -811,8 +811,8 @@ type Blank struct {
 }
 
 // Create provides a mock function with given fields: x
-func (_m *Blank) Create(x interface{}) error {
-	ret := _m.Called(x)
+func (mockerySelf *Blank) Create(x interface{}) error {
+	ret := mockerySelf.Called(x)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(interface{}) error); ok {
@@ -836,8 +836,8 @@ type MapFunc struct {
 }
 
 // Get provides a mock function with given fields: m
-func (_m *MapFunc) Get(m map[string]func(string) string) error {
-	ret := _m.Called(m)
+func (mockerySelf *MapFunc) Get(m map[string]func(string) string) error {
+	ret := mockerySelf.Called(m)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(map[string]func(string) string) error); ok {
@@ -861,8 +861,8 @@ type UsesOtherPkgIface struct {
 }
 
 // DoSomethingElse provides a mock function with given fields: obj
-func (_m *UsesOtherPkgIface) DoSomethingElse(obj test.Sibling) {
-	_m.Called(obj)
+func (mockerySelf *UsesOtherPkgIface) DoSomethingElse(obj test.Sibling) {
+	mockerySelf.Called(obj)
 }
 `
 	s.checkGeneration(
@@ -878,8 +878,8 @@ type Example struct {
 }
 
 // A provides a mock function with given fields:
-func (_m *Example) A() http.Flusher {
-	ret := _m.Called()
+func (mockerySelf *Example) A() http.Flusher {
+	ret := mockerySelf.Called()
 
 	var r0 http.Flusher
 	if rf, ok := ret.Get(0).(func() http.Flusher); ok {
@@ -893,13 +893,13 @@ func (_m *Example) A() http.Flusher {
 	return r0
 }
 
-// B provides a mock function with given fields: _a0
-func (_m *Example) B(_a0 string) fixtureshttp.MyStruct {
-	ret := _m.Called(_a0)
+// B provides a mock function with given fields: mockeryArg0
+func (mockerySelf *Example) B(mockeryArg0 string) fixtureshttp.MyStruct {
+	ret := mockerySelf.Called(mockeryArg0)
 
 	var r0 fixtureshttp.MyStruct
 	if rf, ok := ret.Get(0).(func(string) fixtureshttp.MyStruct); ok {
-		r0 = rf(_a0)
+		r0 = rf(mockeryArg0)
 	} else {
 		r0 = ret.Get(0).(fixtureshttp.MyStruct)
 	}
@@ -919,8 +919,8 @@ type ImportsSameAsPackage struct {
 }
 
 // A provides a mock function with given fields:
-func (_m *ImportsSameAsPackage) A() test.B {
-	ret := _m.Called()
+func (mockerySelf *ImportsSameAsPackage) A() test.B {
+	ret := mockerySelf.Called()
 
 	var r0 test.B
 	if rf, ok := ret.Get(0).(func() test.B); ok {
@@ -933,8 +933,8 @@ func (_m *ImportsSameAsPackage) A() test.B {
 }
 
 // B provides a mock function with given fields:
-func (_m *ImportsSameAsPackage) B() fixtures.KeyManager {
-	ret := _m.Called()
+func (mockerySelf *ImportsSameAsPackage) B() fixtures.KeyManager {
+	ret := mockerySelf.Called()
 
 	var r0 fixtures.KeyManager
 	if rf, ok := ret.Get(0).(func() fixtures.KeyManager); ok {
@@ -948,9 +948,9 @@ func (_m *ImportsSameAsPackage) B() fixtures.KeyManager {
 	return r0
 }
 
-// C provides a mock function with given fields: _a0
-func (_m *ImportsSameAsPackage) C(_a0 fixtures.C) {
-	_m.Called(_a0)
+// C provides a mock function with given fields: mockeryArg0
+func (mockerySelf *ImportsSameAsPackage) C(mockeryArg0 fixtures.C) {
+	mockerySelf.Called(mockeryArg0)
 }
 `
 	s.checkGeneration(

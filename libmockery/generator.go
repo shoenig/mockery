@@ -390,7 +390,7 @@ func (g *Generator) genList(list *types.Tuple, variadic bool) *paramList {
 		pname := v.Name()
 
 		if g.nameCollides(pname) || pname == "" {
-			pname = fmt.Sprintf("_a%d", i)
+			pname = fmt.Sprintf("mockeryArg%d", i)
 		}
 
 		params.Names = append(params.Names, pname)
@@ -448,7 +448,7 @@ func (g *Generator) Generate() error {
 			)
 		}
 		g.printf(
-			"func (_m *%s) %s(%s) ", g.mockName(), fname,
+			"func (mockerySelf *%s) %s(%s) ", g.mockName(), fname,
 			strings.Join(params.Params, ", "),
 		)
 
@@ -475,7 +475,7 @@ func (g *Generator) Generate() error {
 			formattedParamNames += name
 		}
 
-		called := g.generateCalled(params, formattedParamNames) // _m.Called invocation string
+		called := g.generateCalled(params, formattedParamNames) // mockerySelf.Called invocation string
 
 		if len(returns.Types) > 0 {
 			g.printf("\tret := %s\n\n", called)
@@ -522,11 +522,11 @@ func (g *Generator) Generate() error {
 func (g *Generator) generateCalled(list *paramList, formattedParamNames string) string {
 	namesLen := len(list.Names)
 	if namesLen == 0 {
-		return "_m.Called()"
+		return "mockerySelf.Called()"
 	}
 
 	if !list.Variadic {
-		return "_m.Called(" + formattedParamNames + ")"
+		return "mockerySelf.Called(" + formattedParamNames + ")"
 	}
 
 	var variadicArgsName string
@@ -537,14 +537,14 @@ func (g *Generator) generateCalled(list *paramList, formattedParamNames string) 
 		// Variadic is already of the interface{} type, so we don't need special handling.
 		variadicArgsName = variadicName
 	} else {
-		// Define _va to avoid "cannot use t (type T) as type []interface {} in append" error
+		// Define mockeryVariadicArg to avoid "cannot use t (type T) as type []interface {} in append" error
 		// whenever the variadic type is non-interface{}.
-		g.printf("\t_va := make([]interface{}, len(%s))\n", variadicName)
-		g.printf("\tfor _i := range %s {\n\t\t_va[_i] = %s[_i]\n\t}\n", variadicName, variadicName)
-		variadicArgsName = "_va"
+		g.printf("\tmockeryVariadicArg := make([]interface{}, len(%s))\n", variadicName)
+		g.printf("\tfor mockeryI := range %s {\n\t\tmockeryVariadicArg[mockeryI] = %s[mockeryI]\n\t}\n", variadicName, variadicName)
+		variadicArgsName = "mockeryVariadicArg"
 	}
 
-	// _ca will hold all arguments we'll mirror into Called, one argument per distinct value
+	// mockeryCalledArg will hold all arguments we'll mirror into Called, one argument per distinct value
 	// passed to the method.
 	//
 	// For example, if the second argument is variadic and consists of three values,
@@ -560,15 +560,15 @@ func (g *Generator) generateCalled(list *paramList, formattedParamNames string) 
 	//
 	// It's okay for us to use the interface{} type, regardless of the actual types, because
 	// Called receives only interface{} anyway.
-	g.printf("\tvar _ca []interface{}\n")
+	g.printf("\tvar mockeryCalledArg []interface{}\n")
 
 	if namesLen > 1 {
 		nonVariadicParamNames := formattedParamNames[0:strings.LastIndex(formattedParamNames, ",")]
-		g.printf("\t_ca = append(_ca, %s)\n", nonVariadicParamNames)
+		g.printf("\tmockeryCalledArg = append(mockeryCalledArg, %s)\n", nonVariadicParamNames)
 	}
-	g.printf("\t_ca = append(_ca, %s...)\n", variadicArgsName)
+	g.printf("\tmockeryCalledArg = append(mockeryCalledArg, %s...)\n", variadicArgsName)
 
-	return "_m.Called(_ca...)"
+	return "mockerySelf.Called(mockeryCalledArg...)"
 }
 
 func (g *Generator) Write(w io.Writer) error {

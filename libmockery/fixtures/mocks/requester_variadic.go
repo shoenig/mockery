@@ -9,14 +9,14 @@ type RequesterVariadic struct {
 }
 
 // Get provides a mock function with given fields: values
-func (_m *RequesterVariadic) Get(values ...string) bool {
-	_va := make([]interface{}, len(values))
-	for _i := range values {
-		_va[_i] = values[_i]
+func (mockerySelf *RequesterVariadic) Get(values ...string) bool {
+	mockeryVariadicArg := make([]interface{}, len(values))
+	for mockeryI := range values {
+		mockeryVariadicArg[mockeryI] = values[mockeryI]
 	}
-	var _ca []interface{}
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+	var mockeryCalledArg []interface{}
+	mockeryCalledArg = append(mockeryCalledArg, mockeryVariadicArg...)
+	ret := mockerySelf.Called(mockeryCalledArg...)
 
 	var r0 bool
 	if rf, ok := ret.Get(0).(func(...string) bool); ok {
@@ -29,15 +29,15 @@ func (_m *RequesterVariadic) Get(values ...string) bool {
 }
 
 // MultiWriteToFile provides a mock function with given fields: filename, w
-func (_m *RequesterVariadic) MultiWriteToFile(filename string, w ...io.Writer) string {
-	_va := make([]interface{}, len(w))
-	for _i := range w {
-		_va[_i] = w[_i]
+func (mockerySelf *RequesterVariadic) MultiWriteToFile(filename string, w ...io.Writer) string {
+	mockeryVariadicArg := make([]interface{}, len(w))
+	for mockeryI := range w {
+		mockeryVariadicArg[mockeryI] = w[mockeryI]
 	}
-	var _ca []interface{}
-	_ca = append(_ca, filename)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+	var mockeryCalledArg []interface{}
+	mockeryCalledArg = append(mockeryCalledArg, filename)
+	mockeryCalledArg = append(mockeryCalledArg, mockeryVariadicArg...)
+	ret := mockerySelf.Called(mockeryCalledArg...)
 
 	var r0 string
 	if rf, ok := ret.Get(0).(func(string, ...io.Writer) string); ok {
@@ -50,10 +50,10 @@ func (_m *RequesterVariadic) MultiWriteToFile(filename string, w ...io.Writer) s
 }
 
 // OneInterface provides a mock function with given fields: a
-func (_m *RequesterVariadic) OneInterface(a ...interface{}) bool {
-	var _ca []interface{}
-	_ca = append(_ca, a...)
-	ret := _m.Called(_ca...)
+func (mockerySelf *RequesterVariadic) OneInterface(a ...interface{}) bool {
+	var mockeryCalledArg []interface{}
+	mockeryCalledArg = append(mockeryCalledArg, a...)
+	ret := mockerySelf.Called(mockeryCalledArg...)
 
 	var r0 bool
 	if rf, ok := ret.Get(0).(func(...interface{}) bool); ok {
@@ -66,11 +66,11 @@ func (_m *RequesterVariadic) OneInterface(a ...interface{}) bool {
 }
 
 // Sprintf provides a mock function with given fields: format, a
-func (_m *RequesterVariadic) Sprintf(format string, a ...interface{}) string {
-	var _ca []interface{}
-	_ca = append(_ca, format)
-	_ca = append(_ca, a...)
-	ret := _m.Called(_ca...)
+func (mockerySelf *RequesterVariadic) Sprintf(format string, a ...interface{}) string {
+	var mockeryCalledArg []interface{}
+	mockeryCalledArg = append(mockeryCalledArg, format)
+	mockeryCalledArg = append(mockeryCalledArg, a...)
+	ret := mockerySelf.Called(mockeryCalledArg...)
 
 	var r0 string
 	if rf, ok := ret.Get(0).(func(string, ...interface{}) string); ok {
