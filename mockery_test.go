@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func configFromCommandLine(str string) flags {
@@ -13,18 +13,18 @@ func configFromCommandLine(str string) flags {
 
 func TestParseConfigDefaults(t *testing.T) {
 	config := configFromCommandLine("mockery")
-	assert.Equal(t, false, config.version)
-	assert.Equal(t, "", config.iface)
-	assert.Equal(t, false, config.stdout)
-	assert.Equal(t, "", config.pkgname)
-	assert.Equal(t, "", config.comment)
+	require.Equal(t, false, config.version)
+	require.Equal(t, "", config.iface)
+	require.Equal(t, false, config.stdout)
+	require.Equal(t, "", config.pkgname)
+	require.Equal(t, "", config.comment)
 }
 
 func TestParseConfigFlippingValues(t *testing.T) {
 	config := configFromCommandLine("mockery -interface=MyInterface -stdout=true -package=mypackage -comment=blahblah -version=true")
-	assert.Equal(t, true, config.version)
-	assert.Equal(t, "MyInterface", config.iface)
-	assert.Equal(t, true, config.stdout)
-	assert.Equal(t, "mypackage", config.pkgname)
-	assert.Equal(t, "blahblah", config.comment)
+	require.Equal(t, true, config.version)
+	require.Equal(t, "MyInterface", config.iface)
+	require.Equal(t, true, config.stdout)
+	require.Equal(t, "mypackage", config.pkgname)
+	require.Equal(t, "blahblah", config.comment)
 }

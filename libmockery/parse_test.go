@@ -3,7 +3,7 @@ package libmockery
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var testFile string
@@ -18,19 +18,19 @@ func TestFileParse(t *testing.T) {
 	parser := NewParser()
 
 	err := parser.Parse(testFile)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	err = parser.Load()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	node, err := parser.Find("Requester")
-	assert.NoError(t, err)
-	assert.NotNil(t, node)
+	require.NoError(t, err)
+	require.NotNil(t, node)
 }
 
 func testParse(t *testing.T, parser *Parser, a, b, c string) {
 	err := parser.Parse(getFixturePath(a, b, c))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestBuildTagInFilename(t *testing.T) {
@@ -44,11 +44,11 @@ func TestBuildTagInFilename(t *testing.T) {
 	testParse(t, parser, "buildtag", "filename", "iface_freebsd.go")
 
 	err := parser.Load()
-	assert.NoError(t, err) // Expect "redeclared in this block" if tags aren't respected
+	require.NoError(t, err) // Expect "redeclared in this block" if tags aren't respected
 
 	nodes := parser.Interfaces()
-	assert.Equal(t, 1, len(nodes))
-	assert.Equal(t, "IfaceWithBuildTagInFilename", nodes[0].Name)
+	require.Equal(t, 1, len(nodes))
+	require.Equal(t, "IfaceWithBuildTagInFilename", nodes[0].Name)
 }
 
 func TestBuildTagInComment(t *testing.T) {
@@ -62,9 +62,9 @@ func TestBuildTagInComment(t *testing.T) {
 	testParse(t, parser, "buildtag", "comment", "freebsd_iface.go")
 
 	err := parser.Load()
-	assert.NoError(t, err) // Expect "redeclared in this block" if tags aren't respected
+	require.NoError(t, err) // Expect "redeclared in this block" if tags aren't respected
 
 	nodes := parser.Interfaces()
-	assert.Equal(t, 1, len(nodes))
-	assert.Equal(t, "IfaceWithBuildTagInComment", nodes[0].Name)
+	require.Equal(t, 1, len(nodes))
+	require.Equal(t, "IfaceWithBuildTagInComment", nodes[0].Name)
 }
