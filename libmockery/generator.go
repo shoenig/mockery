@@ -230,8 +230,16 @@ func (g *Generator) generateImports() {
 	// Sort by import name so that we get a deterministic order
 	for _, name := range g.sortedImportNames() {
 		path := g.nameToPackagePath[name]
-		g.printf("import %s \"%s\"\n", name, path)
+		g.printf(importText(name, path))
 	}
+}
+
+func importText(name, path string) string {
+	pkg := filepath.Base(path)
+	if name == pkg {
+		return fmt.Sprintf("import \"%s\"\n", path)
+	}
+	return fmt.Sprintf("import %s \"%s\"\n", name, path)
 }
 
 // GeneratePrologue generates the prologue of the mock.
