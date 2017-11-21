@@ -17,7 +17,8 @@ type flags struct {
 }
 
 type environ struct {
-	importPrefix string
+	importPrefix   string
+	verifyNoChange bool
 }
 
 func main() {
@@ -50,6 +51,29 @@ func main() {
 	walker := libmockery.Walker{
 		BaseDir:   ".",
 		Interface: config.iface,
+	}
+
+	if env.verifyNoChange {
+		hasher := libmockery.NewHasher(walker.BaseDir)
+		hashBefore, err := hasher.Hash()
+		if err != nil {
+			fmt.Println("mockery failed to hash file contents:", err)
+			os.Exit(1)
+		}
+
+		defer func() {
+			fmt.Println("ensuring no file contents were changed...")
+			hashAfter, err := hasher.Hash()
+			if err != nil {
+				fmt.Println("mockery failed to hash file contents:", err)
+				os.Exit(1)
+			}
+
+			if err := libmockery.Same(hashBefore, hashAfter); err != nil {
+				fmt.Println("mockery unexpectedly modified files:", err)
+				os.Exit(1)
+			}
+		}()
 	}
 
 	generated := walker.Walk(visitor)
@@ -86,7 +110,9 @@ func parseFlags(args []string) flags {
 
 func parseEnvironment() environ {
 	prefix := os.Getenv("MOCKERY_IMPORT_PREFIX")
+	nochange := os.Getenv("MOCKERY_CHECK_NOCHANGE") == "1"
 	return environ{
-		importPrefix: prefix,
+		importPrefix:   prefix,
+		verifyNoChange: nochange,
 	}
 }
