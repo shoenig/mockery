@@ -89,6 +89,7 @@ type GeneratorVisitor struct {
 	Comment           string
 	OutputPackageName string
 	OutputProvider    OutputStreamProvider
+	ImportPrefix      string
 }
 
 func (gv *GeneratorVisitor) VisitWalk(iface *Interface) error {
@@ -108,7 +109,7 @@ func (gv *GeneratorVisitor) VisitWalk(iface *Interface) error {
 	}
 	defer closer()
 
-	gen := NewGenerator(iface, gv.OutputPackageName)
+	gen := NewGenerator(iface, gv.OutputPackageName, gv.ImportPrefix)
 	gen.GeneratePrologueComment(gv.Comment)
 	gen.GeneratePrologue(gv.OutputPackageName)
 

@@ -43,7 +43,7 @@ type Generator struct {
 }
 
 // NewGenerator builds a Generator.
-func NewGenerator(iface *Interface, pkg string) *Generator {
+func NewGenerator(iface *Interface, pkg, importPrefix string) *Generator {
 
 	var roots []string
 
@@ -60,8 +60,20 @@ func NewGenerator(iface *Interface, pkg string) *Generator {
 		packageRoots:      roots,
 	}
 
-	g.addPackageImportWithName("github.com/stretchr/testify/mock", "mock")
+	g.addPackageImportWithName(mockPackage(importPrefix), "mock")
 	return g
+}
+
+const (
+	testifyMockPackage = "github.com/stretchr/testify/mock"
+)
+
+func mockPackage(importPrefix string) string {
+	if importPrefix == "" {
+		return testifyMockPackage
+	}
+	importPrefix = strings.TrimRight(importPrefix, "/")
+	return importPrefix + "/" + testifyMockPackage
 }
 
 func (g *Generator) populateImports() {

@@ -16,6 +16,10 @@ type flags struct {
 	pkgname string
 }
 
+type environ struct {
+	importPrefix string
+}
+
 func main() {
 	config := parseFlags(os.Args)
 
@@ -34,10 +38,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	env := parseEnvironment()
+
 	visitor := &libmockery.GeneratorVisitor{
 		Comment:           config.comment,
 		OutputProvider:    outputProvider(config),
 		OutputPackageName: config.pkgname,
+		ImportPrefix:      env.importPrefix,
 	}
 
 	walker := libmockery.Walker{
@@ -75,4 +82,11 @@ func parseFlags(args []string) flags {
 	flagSet.Parse(args[1:])
 
 	return config
+}
+
+func parseEnvironment() environ {
+	prefix := os.Getenv("MOCKERY_IMPORT_PREFIX")
+	return environ{
+		importPrefix: prefix,
+	}
 }

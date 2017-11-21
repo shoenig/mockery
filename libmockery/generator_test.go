@@ -42,7 +42,7 @@ func (s *GeneratorSuite) getInterfaceFromFile(interfacePath, interfaceName strin
 
 func (s *GeneratorSuite) getGenerator(filepath, interfaceName string) *Generator {
 	return NewGenerator(
-		s.getInterfaceFromFile(filepath, interfaceName), pkg,
+		s.getInterfaceFromFile(filepath, interfaceName), pkg, "",
 	)
 }
 
@@ -87,6 +87,17 @@ func (s *GeneratorSuite) getInterfaceRelPath(iface *Interface) string {
 
 	// Align w/ Generator.getLocalizedPath and enforce '/' slashes for import paths in every OS.
 	return filepath.ToSlash(local)
+}
+
+func (s *GeneratorSuite) TestMockPackage() {
+	pkg1 := mockPackage("")
+	s.Equal("github.com/stretchr/testify/mock", pkg1)
+
+	pkg2 := mockPackage("internal/site/")
+	s.Equal("internal/site/github.com/stretchr/testify/mock", pkg2)
+
+	pkg3 := mockPackage("internal/site")
+	s.Equal("internal/site/github.com/stretchr/testify/mock", pkg3)
 }
 
 func (s *GeneratorSuite) TestCalculateImport() {
