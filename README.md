@@ -6,7 +6,7 @@ mockery (v2) is used to generate mock implementations of Go interfaces.
 
 ## Installation
 
-`go install github.com/shoenig/mockery`
+Run `go get github.com/shoenig/mockery`
 
 ## Arguments
 
@@ -30,183 +30,53 @@ Use `-stdout=true` to have mockery print generated mocks to standard out instead
 
 Use `-comment="some text"` to have mockery inject a comment into the prologue of each generated file.
 
+## Environment
 
+##### custom import prefix
 
------------------------ cut here --------------------
+Set `MOCKERY_IMPORT_PREFIX=internal.net/packages/` to hack mockery prefix generated imports with custom location.
 
-### Examples
+##### verification of no changes
 
-#### Simplest case
+Set `MOCKERY_CHECK_NOCHANGE=1` to have mockery return non-zero exit code if any files are modified.
 
-Given this is in `string.go`
+## Best Practices
+
+Typically, a project should always use `mockery` via the `go generate` command so that future developers
+can see exactly how generated code was created. Each interface to be mocked should have its own generate
+line. Libraries which export interfaces should always provide mocks to those interfaces, in a subpackage.
+For example if you have package "foo", it should have generate lines that put the generated mocks into a
+sub-package called "footest". That way, clients can easily consume those mocks.
+
+## Examples
 
 ```go
-package test
+package foo
 
-type Stringer interface {
+//go:generate mockery -interface=Bar -package=footest
+
+type Bar interface {
 	String() string
 }
-```
 
-Run: `mockery -name=Stringer` and the following will be output to `mocks/Stringer.go`:
+//go:generate mockery -interface=Bazzer -package=footest
 
-```go
-package mocks
-
-import "github.com/stretchr/testify/mock"
-
-type Stringer struct {
-	mock.Mock
-}
-
-func (m *Stringer) String() string {
-	ret := m.Called()
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	return r0
+type Bazzer interface {
+	Baz() error
 }
 ```
 
-#### Next level case
+## Private Repositories
 
-See [github.com/jaytaylor/mockery-example](https://github.com/jaytaylor/mockery-example)
-for the fully runnable version of the outline below.
+Some teams use private repositories for all 3rd-party code, including the `github.com/stretchr/testify`
+packages, references to which are used in generated mocks. To support internally hosted copies of these
+packages, set `MOCKERY_IMPORT_PREFIX=some/internal/prefix` to automatically mangle the import string to
+reference the internally mirrored packages.
 
-```go
-package main
+## Continuous Integration
 
-import (
-	"fmt"
-
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/jaytaylor/mockery-example/mocks"
-	"github.com/stretchr/testify/mock"
-)
-
-func main() {
-	mockS3 := &mocks.S3API{}
-
-	mockResultFn := func(input *s3.ListObjectsInput) *s3.ListObjectsOutput {
-		output := &s3.ListObjectsOutput{}
-		output.SetCommonPrefixes([]*s3.CommonPrefix{
-			&s3.CommonPrefix{
-				Prefix: aws.String("2017-01-01"),
-			},
-		})
-		return output
-	}
-
-	// NB: .Return(...) must return the same signature as the method being mocked.
-	//     In this case it's (*s3.ListObjectsOutput, error).
-	mockS3.On("ListObjects", mock.MatchedBy(func(input *s3.ListObjectsInput) bool {
-		return input.Delimiter != nil && *input.Delimiter == "/" && input.Prefix == nil
-	})).Return(mockResultFn, nil)
-
-	listingInput := &s3.ListObjectsInput{
-		Bucket:    aws.String("foo"),
-		Delimiter: aws.String("/"),
-	}
-	listingOutput, err := mockS3.ListObjects(listingInput)
-	if err != nil {
-		panic(err)
-	}
-
-	for _, x := range listingOutput.CommonPrefixes {
-		fmt.Printf("common prefix: %+v\n", *x)
-	}
-}
-```
-
-### Imports
-
-mockery pulls in all the same imports used in the file that contains the interface so
-that package types will work correctly. It then runs the output through the `imports`
-package to remove any unnecessary imports (as they'd result in compile errors).
-
-### Types
-
-mockery should handle all types. If you find it does not, please report the issue.
-
-### Return Value Provider Functions
-
-If your tests need access to the arguments to calculate the return values,
-set the return value to a function that takes the method's arguments as its own
-arguments and returns the return value. For example, given this interface:
-
-```go
-package test
-
-type Proxy interface {
-  passthrough(s string) string
-}
-```
-
-The argument can be passed through as the return value:
-
-```go
-package test
-
-import . "github.com/stretchr/testify/mock"
-
-Mock.On("passthrough", AnythingOfType("string")).Return(func(s string) string {
-    return s
-})
-```
-
-#### Requirements
-
-`Return` must be passed the same argument count and types as expected by the interface. If the return argument signature of `passthrough` in the above example was instead `(string, error)` in the interface, `Return` would also need a second argument to define the error value.
-
-If any return argument is missing, `github.com/stretchr/testify/mock.Arguments.Get` will emit a panic.
-
-For example, `panic: assert: arguments: Cannot call Get(0) because there are 0 argument(s). [recovered]` indicates that `Return` was not provided any arguments but (at least one) was expected based on the interface. `Get(1)` would indicate that the `Return` call is missing a second argument, and so on.
-
-#### Notes
-
-This approach should be used judiciously, as return values should generally 
-not depend on arguments in mocks; however, this approach can be helpful for 
-situations like passthroughs or other test-only calculations.
-
-### Name
-
-The `-name` option takes either the name or matching regular expression of interface to generate mock(s) for.
-
-### All
-
-It's common for a big package to have a lot of interfaces, so mockery provides `-all`.
-This option will tell mockery to scan all files under the directory named by `-dir` ("." by default)
-and generates mocks for any interfaces it finds. This option implies `-recursive=true`.
-
-`-all` was designed to be able to be used automatically in the background if required.
-
-### Recursive
-
-Use the `-recursive` option to search subdirectories for the interface(s).
-This option is only compatible with `-name`. The `-all` option implies `-recursive=true`.
-
-### Output
-
-mockery always generates files with the package `mocks` to keep things clean and simple.
-You can control which mocks directory is used by using `-output`, which defaults to `./mocks`.
-
-## Caseing
-
-mockery generates files using the caseing of the original interface name.  This
-can be modified by specifying `-case=underscore` to format the generated file
-name using underscore casing.
-
-### Debug
-
-Use `mockery -print` to have the resulting code printed out instead of written to disk.
-
-### Mocking interfaces in `main`
-
-When your interfaces are in the main package you should supply the `-inpkg` flag.
-This will generate mocks in the same package as the target code avoiding import issues.
+In an effort to prevent the checking-in of artisinal generated content that is difficult to reproduce
+without explicit instructions, `mockery` supports a verification mode that returns a non-zero exit code
+if any files were modified during execution. The idea is that this can be used in CI environments, where
+running `mockery` should not make changes to generated mocks already checked into the repository. To enable
+this mode, set `MOCKERY_CHECK_NOCHANGE=1`.
