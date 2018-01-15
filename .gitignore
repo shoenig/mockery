@@ -2,3 +2,4 @@ mockery
 mocks
 mockery.prof
 .idea
+vendor/
