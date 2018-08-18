@@ -3,3 +3,5 @@ mocks
 mockery.prof
 .idea
 vendor/
+go.sum
+cover.out
