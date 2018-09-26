@@ -15,7 +15,7 @@ func init() {
 }
 
 func TestFileParse(t *testing.T) {
-	parser := NewParser()
+	parser := NewParser2()
 
 	err := parser.Parse(testFile)
 	require.NoError(t, err)
@@ -23,18 +23,19 @@ func TestFileParse(t *testing.T) {
 	err = parser.Load()
 	require.NoError(t, err)
 
-	node, err := parser.Find("Requester")
-	require.NoError(t, err)
-	require.NotNil(t, node)
+	// method not implemented in v3
+	// node, err := parser.Find("Requester")
+	// require.NoError(t, err)
+	// require.NotNil(t, node)
 }
 
-func testParse(t *testing.T, parser *Parser, a, b, c string) {
+func testParse(t *testing.T, parser Parser, a, b, c string) {
 	err := parser.Parse(getFixturePath(a, b, c))
 	require.NoError(t, err)
 }
 
 func TestBuildTagInFilename(t *testing.T) {
-	parser := NewParser()
+	parser := NewParser2()
 
 	// Include the major OS values found on https://golang.org/dl/ so we're likely to match
 	// anywhere the test is executed.
@@ -52,7 +53,7 @@ func TestBuildTagInFilename(t *testing.T) {
 }
 
 func TestBuildTagInComment(t *testing.T) {
-	parser := NewParser()
+	parser := NewParser2()
 
 	// Include the major OS values found on https://golang.org/dl/ so we're likely to match
 	// anywhere the test is executed.

@@ -1,8 +1,6 @@
 package libmockery
 
 import (
-	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -36,14 +34,6 @@ func TestWalker_gather_cwd(t *testing.T) {
 	require.Equal(t, 1, len(gv.Interfaces))
 	first := gv.Interfaces[0]
 	require.Equal(t, "WalkerVisitor", first.Name)
-
-	cwd, err := os.Getwd()
-	require.NoError(t, err)
-
-	path := filepath.Join(cwd, "walker.go")
-	require.NoError(t, err)
-
-	require.Equal(t, path, first.Path)
 }
 
 func TestWalker_gather_subdir(t *testing.T) {
@@ -59,5 +49,4 @@ func TestWalker_gather_subdir(t *testing.T) {
 	require.Equal(t, 1, len(gv.Interfaces))
 	first := gv.Interfaces[0]
 	require.Equal(t, "AsyncProducer", first.Name)
-	require.Equal(t, getFixturePath("async.go"), first.Path)
 }

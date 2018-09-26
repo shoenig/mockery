@@ -137,14 +137,14 @@ func (g *Generator) getNonConflictingName(path, name string) string {
 		}
 	}
 	// Try adding numbers to the given name
-	i := 2
-	for {
+
+	for i := 2; i < 10000; i++ {
 		prospectiveName = fmt.Sprintf("%v%d", name, i)
 		if !g.importNameExists(prospectiveName) {
 			return prospectiveName
 		}
-		i++
 	}
+	panic("unable to create a name")
 }
 
 func (g *Generator) importNameExists(name string) bool {

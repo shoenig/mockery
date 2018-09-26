@@ -21,7 +21,7 @@ type WalkerVisitor interface {
 
 // Walk returns true if a mock is generated.
 func (w *Walker) Walk(visitor WalkerVisitor) bool {
-	parser := NewParser()
+	parser := NewParser2()
 
 	if err := w.doWalk(parser, w.BaseDir, visitor); err != nil {
 		fmt.Printf("failed to walk directory %q: %v\n", w.BaseDir, err)
@@ -54,7 +54,7 @@ func (w *Walker) Walk(visitor WalkerVisitor) bool {
 }
 
 // doWalk is a helper function that returns true as soon as the first mock is generated.
-func (w *Walker) doWalk(p *Parser, dir string, visitor WalkerVisitor) error {
+func (w *Walker) doWalk(p Parser, dir string, visitor WalkerVisitor) error {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return err
