@@ -3,7 +3,7 @@ package libmockery
 import (
 	"testing"
 
-	"github.com/shoenig/mockery/libmockery/fixtures/mocks"
+	"github.com/shoenig/mockery3/libmockery/fixtures/mocks"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 )

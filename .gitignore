@@ -4,3 +4,4 @@ mockery.prof
 .idea
 vendor/
 cover.out
+mockery3

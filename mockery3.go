@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/shoenig/mockery/libmockery"
+	"github.com/shoenig/mockery3/libmockery"
 )
 
 type flags struct {

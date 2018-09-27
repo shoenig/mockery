@@ -36,7 +36,7 @@ func (fosp *FileOutputStreamProvider) GetWriter(iface *Interface) (io.Writer, er
 		return nil, err, nil
 	}
 
-	fmt.Printf("generating mock for interface: %q\n", iface.Name)
+	fmt.Printf("generating mock for interface: %s\n", iface.Name)
 	return f, nil, func() error {
 		return f.Close()
 	}

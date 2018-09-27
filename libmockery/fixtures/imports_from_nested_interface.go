@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/shoenig/mockery/libmockery/fixtures/http"
+	"github.com/shoenig/mockery3/libmockery/fixtures/http"
 )
 
 type HasConflictingNestedImports interface {
