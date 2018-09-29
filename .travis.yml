@@ -3,10 +3,6 @@ language: go
 go:
   - 1.x
 
-install:
-  - go get github.com/stretchr/testify
-  - go get github.com/shoenig/mockery
-
 script:
   - go build ./...
   - go vet ./...
