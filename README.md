@@ -1,7 +1,7 @@
 mockery3
 ========
 
-mockery3 is used to generate mock implementations of Go interfaces.
+mockery3 is used to generate mock implementations of Go interfaces - for Go projects using modules.
 It is a fork of the upstream [mockery](https://github.com/vektra/mockery) tool, but with a reduced feature set.
 
 ## Installation
