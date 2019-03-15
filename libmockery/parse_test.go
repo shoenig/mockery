@@ -15,7 +15,7 @@ func init() {
 }
 
 func TestFileParse(t *testing.T) {
-	parser := NewParser2()
+	parser := NewParser2(true)
 
 	err := parser.Parse(testFile)
 	require.NoError(t, err)
@@ -35,7 +35,7 @@ func testParse(t *testing.T, parser Parser, a, b, c string) {
 }
 
 func TestBuildTagInFilename(t *testing.T) {
-	parser := NewParser2()
+	parser := NewParser2(true)
 
 	// Include the major OS values found on https://golang.org/dl/ so we're likely to match
 	// anywhere the test is executed.
@@ -53,7 +53,7 @@ func TestBuildTagInFilename(t *testing.T) {
 }
 
 func TestBuildTagInComment(t *testing.T) {
-	parser := NewParser2()
+	parser := NewParser2(true)
 
 	// Include the major OS values found on https://golang.org/dl/ so we're likely to match
 	// anywhere the test is executed.

@@ -21,7 +21,7 @@ type GeneratorSuite struct {
 
 func (s *GeneratorSuite) SetupTest() {
 	s.T().Skip("methods not implemented in v3")
-	s.parser = NewParser2()
+	s.parser = NewParser2(true)
 }
 
 func (s *GeneratorSuite) getInterfaceFromFile(interfacePath, interfaceName string) *Interface {
