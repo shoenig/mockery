@@ -11,6 +11,7 @@ import (
 )
 
 type Walker struct {
+	Verbose   bool
 	BaseDir   string
 	Interface string
 }
@@ -21,7 +22,7 @@ type WalkerVisitor interface {
 
 // Walk returns true if a mock is generated.
 func (w *Walker) Walk(visitor WalkerVisitor) bool {
-	parser := NewParser2()
+	parser := NewParser2(w.Verbose)
 
 	if err := w.doWalk(parser, w.BaseDir, visitor); err != nil {
 		fmt.Printf("failed to walk directory %q: %v\n", w.BaseDir, err)

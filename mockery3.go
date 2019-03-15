@@ -14,6 +14,7 @@ type flags struct {
 	stdout  bool
 	comment string
 	pkgname string
+	verbose bool
 }
 
 type environ struct {
@@ -49,6 +50,7 @@ func main() {
 	}
 
 	walker := libmockery.Walker{
+		Verbose:   config.verbose,
 		BaseDir:   ".",
 		Interface: config.iface,
 	}
@@ -102,8 +104,11 @@ func parseFlags(args []string) flags {
 	flagSet.BoolVar(&config.stdout, "stdout", false, "print the generated mock to stdout instead of writing to disk")
 	flagSet.StringVar(&config.comment, "comment", "", "comment to insert into prologue of each generated file")
 	flagSet.StringVar(&config.pkgname, "package", "", "package name containing generated mocks")
+	flagSet.BoolVar(&config.verbose, "verbose", false, "print lots of trace logging")
 
-	flagSet.Parse(args[1:])
+	if err := flagSet.Parse(args[1:]); err != nil {
+		panic("parse flags failed: " + err.Error())
+	}
 
 	return config
 }

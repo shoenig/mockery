@@ -28,7 +28,7 @@ type Parser2 struct {
 	showLog bool
 }
 
-func NewParser2() *Parser2 {
+func NewParser2(verbose bool) *Parser2 {
 	return &Parser2{
 		config: &packages.Config{
 			Mode:       packages.LoadTypes, // enough.
@@ -40,8 +40,8 @@ func NewParser2() *Parser2 {
 			ParseFile:  nil,                // defaults?
 			Tests:      true,               // parse _test files?
 		},
-		pkg:     nil,   // gets set in Parse
-		showLog: false, // turn on for verbose debugging
+		pkg:     nil,     // gets set in Parse
+		showLog: verbose, // show lots of trace logging
 	}
 }
 
@@ -49,6 +49,15 @@ func (p *Parser2) logf(format string, i ...interface{}) {
 	if p.showLog {
 		fmt.Printf("Parser2: "+format+"\n", i...)
 	}
+}
+
+func stripMajor(module string) string {
+	tokens := strings.Split(module, "/")
+	last := tokens[len(tokens)-1]
+	if verRe.MatchString(last) {
+		return strings.Join(tokens[:len(tokens)-1], "/")
+	}
+	return strings.Join(tokens, "/")
 }
 
 func (p *Parser2) Parse(filename string) error {
@@ -87,8 +96,10 @@ func (p *Parser2) Parse(filename string) error {
 	}
 
 	p.logf("module: %s", module)
+	moduleWithoutMajorVersion := stripMajor(module)
+	p.logf("module no major: %s", moduleWithoutMajorVersion)
 
-	i := strings.Index(abs, module)
+	i := strings.Index(abs, moduleWithoutMajorVersion)
 	if i < 0 {
 		return errors.New("module does not exist in abs")
 	}
@@ -140,6 +151,7 @@ func (p *Parser2) Parse(filename string) error {
 var (
 	pkgRe = regexp.MustCompile(`package[\s]+([\S]+)`)
 	modRe = regexp.MustCompile(`module[\s]+([\S]+)`)
+	verRe = regexp.MustCompile(`v[0-9]+`)
 )
 
 func moduleFromModFile(filename string) (string, error) {
