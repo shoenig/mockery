@@ -29,14 +29,17 @@ type FileOutputStreamProvider struct {
 func (fosp *FileOutputStreamProvider) GetWriter(iface *Interface) (io.Writer, error, Cleanup) {
 	caseName := fosp.underscoreCaseName(iface.Name)
 	path := filepath.Join(fosp.BaseDir, fosp.filename(caseName))
-	os.MkdirAll(filepath.Dir(path), 0755)
+
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		return nil, err, nil
+	}
 
 	f, err := os.Create(path)
 	if err != nil {
 		return nil, err, nil
 	}
 
-	fmt.Printf("generating mock for interface: %s\n", iface.Name)
+	fmt.Printf("mockery3: generating mock for interface: %s\n", iface.Name)
 	return f, nil, func() error {
 		return f.Close()
 	}

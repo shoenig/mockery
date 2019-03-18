@@ -12,7 +12,7 @@ func configFromCommandLine(str string) flags {
 }
 
 func TestParseConfigDefaults(t *testing.T) {
-	config := configFromCommandLine("mockery")
+	config := configFromCommandLine("mockery3")
 	require.Equal(t, false, config.version)
 	require.Equal(t, "", config.iface)
 	require.Equal(t, false, config.stdout)
@@ -21,7 +21,7 @@ func TestParseConfigDefaults(t *testing.T) {
 }
 
 func TestParseConfigFlippingValues(t *testing.T) {
-	config := configFromCommandLine("mockery -interface=MyInterface -stdout=true -package=mypackage -comment=blahblah -version=true")
+	config := configFromCommandLine("mockery3 -interface=MyInterface -stdout=true -package=mypackage -comment=blahblah -version=true")
 	require.Equal(t, true, config.version)
 	require.Equal(t, "MyInterface", config.iface)
 	require.Equal(t, true, config.stdout)

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/shoenig/mockery3/libmockery"
+	"github.com/shoenig/mockery3/v3/libmockery"
 )
 
 type flags struct {
@@ -18,7 +18,6 @@ type flags struct {
 }
 
 type environ struct {
-	importPrefix   string
 	verifyNoChange bool
 }
 
@@ -26,7 +25,7 @@ func main() {
 	config := parseFlags(os.Args)
 
 	if config.version {
-		fmt.Println("mockery " + libmockery.Version)
+		fmt.Println("mockery3 " + libmockery.Version)
 		return
 	}
 
@@ -46,7 +45,6 @@ func main() {
 		Comment:           config.comment,
 		OutputProvider:    outputProvider(config),
 		OutputPackageName: config.pkgname,
-		ImportPrefix:      env.importPrefix,
 	}
 
 	walker := libmockery.Walker{
@@ -59,20 +57,20 @@ func main() {
 		hasher := libmockery.NewHasher(walker.BaseDir)
 		hashBefore, err := hasher.Hash()
 		if err != nil {
-			fmt.Println("mockery failed to hash file contents:", err)
+			fmt.Println("mockery3: failed to hash file contents:", err)
 			os.Exit(1)
 		}
 
 		defer func() {
-			fmt.Println("ensuring no file contents were changed...")
+			fmt.Println("mockery3: ensuring no file contents were changed...")
 			hashAfter, err := hasher.Hash()
 			if err != nil {
-				fmt.Println("mockery failed to hash file contents:", err)
+				fmt.Println("mockery3: failed to hash file contents:", err)
 				os.Exit(1)
 			}
 
 			if err := libmockery.Same(hashBefore, hashAfter); err != nil {
-				fmt.Println("mockery unexpectedly modified files:", err)
+				fmt.Println("mockery3: unexpectedly modified files:", err)
 				os.Exit(1)
 			}
 		}()
@@ -81,7 +79,7 @@ func main() {
 	generated := walker.Walk(visitor)
 
 	if !generated {
-		fmt.Printf("Unable to find interface %q in any go files under this path\n", config.iface)
+		fmt.Printf("mockery3: unable to find interface %q in any go files under this path\n", config.iface)
 		os.Exit(1)
 	}
 }
@@ -114,10 +112,8 @@ func parseFlags(args []string) flags {
 }
 
 func parseEnvironment() environ {
-	prefix := os.Getenv("MOCKERY_IMPORT_PREFIX")
 	nochange := os.Getenv("MOCKERY_CHECK_NOCHANGE") == "1"
 	return environ{
-		importPrefix:   prefix,
 		verifyNoChange: nochange,
 	}
 }

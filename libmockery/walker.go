@@ -78,7 +78,7 @@ func (w *Walker) doWalk(p Parser, dir string, visitor WalkerVisitor) error {
 		}
 
 		if err := p.Parse(path); err != nil {
-			fmt.Fprintln(os.Stderr, "Error parsing file: ", err)
+			fmt.Println("Error parsing file: ", err)
 			return err
 		}
 	}
