@@ -3,7 +3,7 @@ package test
 import (
 	"net/http"
 
-	my_http "github.com/shoenig/mockery3/libmockery/fixtures/http"
+	my_http "github.com/shoenig/mockery3/v3/libmockery/fixtures/http"
 )
 
 // Example is an example

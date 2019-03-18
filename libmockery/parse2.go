@@ -104,18 +104,25 @@ func (p *Parser2) Parse(filename string) error {
 		return errors.New("module does not exist in abs")
 	}
 
+	// compensate for removed "/v[N]+"
+	i -= len(module) - len(moduleWithoutMajorVersion)
 	rest := abs[1+i+len(module):]
 
 	pkgs := filepath.Dir(rest)
+	p.logf("pkgs is: %s", pkgs)
+
 	pkg := filepath.Join(module, pkgs)
+
+	p.logf("determined module  is: %s", module)
 	p.logf("determined package is: %s", pkg)
 
 	// need to determine the package name in which filename exists
-	// e.g. "github.com/a/b/c/d"
+	// e.g. "github.com/a/b/v3/c/d"
 	loadedPkgs, err := packages.Load(p.config, pkg)
 	if err != nil {
 		return err
 	}
+	p.logf("loadedPkgs is: %s", loadedPkgs)
 
 	if len(loadedPkgs) == 0 {
 		return errors.New("failed to load any package")

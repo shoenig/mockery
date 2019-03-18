@@ -20,5 +20,10 @@ func init() {
 // getFixturePath("src.go") returns "/path/to/fixtures/src.go"
 // getFixturePath("a", "b", "c", "src.go") returns "/path/to/fixtures/a/b/c/src.go"
 func getFixturePath(subdirOrBasename ...string) string {
-	return filepath.Join(append([]string{fixturePath}, subdirOrBasename...)...)
+	return filepath.Join(
+		append(
+			[]string{fixturePath},
+			subdirOrBasename...,
+		)...,
+	)
 }

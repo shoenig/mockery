@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/shoenig/mockery3/libmockery"
+	"github.com/shoenig/mockery3/v3/libmockery"
 )
 
 type flags struct {
@@ -18,7 +18,6 @@ type flags struct {
 }
 
 type environ struct {
-	importPrefix   string
 	verifyNoChange bool
 }
 
@@ -46,7 +45,6 @@ func main() {
 		Comment:           config.comment,
 		OutputProvider:    outputProvider(config),
 		OutputPackageName: config.pkgname,
-		ImportPrefix:      env.importPrefix,
 	}
 
 	walker := libmockery.Walker{
@@ -114,10 +112,8 @@ func parseFlags(args []string) flags {
 }
 
 func parseEnvironment() environ {
-	prefix := os.Getenv("MOCKERY_IMPORT_PREFIX")
 	nochange := os.Getenv("MOCKERY_CHECK_NOCHANGE") == "1"
 	return environ{
-		importPrefix:   prefix,
 		verifyNoChange: nochange,
 	}
 }

@@ -22,11 +22,6 @@ func TestFileParse(t *testing.T) {
 
 	err = parser.Load()
 	require.NoError(t, err)
-
-	// method not implemented in v3
-	// node, err := parser.Find("Requester")
-	// require.NoError(t, err)
-	// require.NotNil(t, node)
 }
 
 func testParse(t *testing.T, parser Parser, a, b, c string) {

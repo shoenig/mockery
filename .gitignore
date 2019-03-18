@@ -1,7 +1,5 @@
-mockery
+cmd/mockery3/mockery3
 mocks
 mockery.prof
 .idea
-vendor/
 cover.out
-mockery3

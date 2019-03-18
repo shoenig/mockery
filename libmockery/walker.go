@@ -16,6 +16,12 @@ type Walker struct {
 	Interface string
 }
 
+func (w Walker) logf(format string, i ...interface{}) {
+	if w.Verbose {
+		fmt.Printf("Walker: "+format+"\n", i...)
+	}
+}
+
 type WalkerVisitor interface {
 	VisitWalk(*Interface) error
 }
@@ -61,6 +67,8 @@ func (w *Walker) doWalk(p Parser, dir string, visitor WalkerVisitor) error {
 		return err
 	}
 
+	w.logf("doWalk: files: %s", files)
+
 	for _, file := range files {
 		filename := file.Name()
 		if strings.HasPrefix(filename, ".") || strings.HasPrefix(filename, "_") {
@@ -90,7 +98,6 @@ type GeneratorVisitor struct {
 	Comment           string
 	OutputPackageName string
 	OutputProvider    OutputStreamProvider
-	ImportPrefix      string
 }
 
 func (gv *GeneratorVisitor) VisitWalk(iface *Interface) error {
@@ -110,7 +117,7 @@ func (gv *GeneratorVisitor) VisitWalk(iface *Interface) error {
 	}
 	defer closer()
 
-	gen := NewGenerator(iface, gv.OutputPackageName, gv.ImportPrefix)
+	gen := NewGenerator(iface, gv.OutputPackageName)
 	gen.GeneratePrologueComment(gv.Comment)
 	gen.GeneratePrologue(gv.OutputPackageName)
 

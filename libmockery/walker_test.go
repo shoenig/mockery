@@ -23,6 +23,7 @@ func NewGatheringVisitor() *GatheringVisitor {
 
 func TestWalker_gather_cwd(t *testing.T) {
 	w := Walker{
+		Verbose:   true,
 		BaseDir:   ".",
 		Interface: "WalkerVisitor",
 	}
@@ -38,6 +39,7 @@ func TestWalker_gather_cwd(t *testing.T) {
 
 func TestWalker_gather_subdir(t *testing.T) {
 	w := Walker{
+		Verbose:   true,
 		BaseDir:   "fixtures",
 		Interface: "AsyncProducer",
 	}
