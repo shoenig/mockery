@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
-	"strings"
 
 	"github.com/pkg/errors"
 	"golang.org/x/tools/go/packages"
@@ -51,15 +50,6 @@ func (p *Parser2) logf(format string, i ...interface{}) {
 	}
 }
 
-func stripMajor(module string) string {
-	tokens := strings.Split(module, "/")
-	last := tokens[len(tokens)-1]
-	if verRe.MatchString(last) {
-		return strings.Join(tokens[:len(tokens)-1], "/")
-	}
-	return strings.Join(tokens, "/")
-}
-
 func (p *Parser2) Parse(filename string) error {
 	// filename is just a filename, in the current directory
 	// from that filename, we determine the Go package that
@@ -96,19 +86,11 @@ func (p *Parser2) Parse(filename string) error {
 	}
 
 	p.logf("module: %s", module)
-	moduleWithoutMajorVersion := stripMajor(module)
-	p.logf("module no major: %s", moduleWithoutMajorVersion)
 
-	i := strings.Index(abs, moduleWithoutMajorVersion)
-	if i < 0 {
-		return errors.New("module does not exist in abs")
+	pkgs, err := filepath.Rel(filepath.Dir(modFile), dir)
+	if err != nil {
+		return err
 	}
-
-	// compensate for removed "/v[N]+"
-	i -= len(module) - len(moduleWithoutMajorVersion)
-	rest := abs[1+i+len(module):]
-
-	pkgs := filepath.Dir(rest)
 	p.logf("pkgs is: %s", pkgs)
 
 	pkg := filepath.Join(module, pkgs)
