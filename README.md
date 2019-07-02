@@ -6,7 +6,7 @@ It is a fork of the upstream [mockery](https://github.com/vektra/mockery) tool, 
 
 ## Installation
 
-Run `go get github.com/shoenig/mockery3`
+Run `go get github.com/shoenig/mockery3/v3/cmd/mockery3`
 
 ## Arguments
 
